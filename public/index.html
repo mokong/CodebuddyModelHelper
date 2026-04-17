@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CodeBuddy Models Manager</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CodeBuddy Models Manager</p>
+          <h1>模型配置</h1>
+          <p id="configPath" class="path-text">正在读取配置...</p>
+        </div>
+        <div class="top-actions">
+          <button id="refreshBtn" type="button" class="button secondary">刷新</button>
+          <button id="saveBtn" type="button" class="button primary">保存配置</button>
+        </div>
+      </header>
+
+      <section id="status" class="status" hidden></section>
+
+      <section class="toolbar">
+        <label class="search-box">
+          <span>搜索</span>
+          <input id="searchInput" type="search" placeholder="模型 ID、名称或供应商" />
+        </label>
+        <button id="addBtn" type="button" class="button secondary">添加模型</button>
+      </section>
+
+      <section class="layout">
+        <aside class="panel list-panel">
+          <div class="panel-header">
+            <h2>模型列表</h2>
+            <span id="modelCount" class="count">0</span>
+          </div>
+          <div id="modelList" class="model-list"></div>
+        </aside>
+
+        <section class="panel editor-panel">
+          <div class="panel-header">
+            <h2 id="editorTitle">选择一个模型</h2>
+            <button id="deleteBtn" type="button" class="button danger" disabled>删除</button>
+          </div>
+
+          <form id="modelForm" class="model-form">
+            <div class="form-grid">
+              <label>
+                模型 ID
+                <input name="id" required placeholder="gpt-4.1" />
+              </label>
+              <label>
+                显示名称
+                <input name="name" required placeholder="GPT 4.1" />
+              </label>
+              <label>
+                供应商
+                <input name="vendor" required placeholder="OpenAI" />
+              </label>
+              <label>
+                API 地址
+                <input name="url" required placeholder="https://api.example.com/v1/chat/completions" />
+              </label>
+              <label>
+                最大输入 Tokens
+                <input name="maxInputTokens" type="number" min="1" step="1" required />
+              </label>
+              <label>
+                最大输出 Tokens
+                <input name="maxOutputTokens" type="number" min="1" step="1" required />
+              </label>
+            </div>
+
+            <div class="api-key-row">
+              <label>
+                API Key
+                <input name="apiKey" type="password" autocomplete="off" placeholder="保持原密钥不变" />
+              </label>
+              <p id="apiKeyHint" class="hint">已有密钥会被保留，输入新值才会替换。</p>
+            </div>
+
+            <div class="switch-row">
+              <label><input name="supportsToolCall" type="checkbox" /> 工具调用</label>
+              <label><input name="supportsImages" type="checkbox" /> 图片输入</label>
+              <label><input name="supportsReasoning" type="checkbox" /> 推理能力</label>
+            </div>
+
+            <div class="form-actions">
+              <button id="applyBtn" type="submit" class="button primary" disabled>应用到列表</button>
+            </div>
+          </form>
+        </section>
+      </section>
+
+      <section class="panel visibility-panel">
+        <div class="panel-header">
+          <div>
+            <h2>可见模型</h2>
+            <p class="hint">显示全部会保存为空数组；只显示选中项会写入 availableModels。</p>
+          </div>
+        </div>
+        <label class="visibility-toggle">
+          <input id="showAllToggle" type="checkbox" />
+          显示全部模型
+        </label>
+        <div id="availableList" class="available-list"></div>
+      </section>
+    </main>
+
+    <template id="emptyTemplate">
+      <div class="empty-state">
+        <strong>还没有模型</strong>
+        <span>点击“添加模型”开始配置。</span>
+      </div>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

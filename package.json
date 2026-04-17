@@ -1,0 +1,24 @@
+{
+  "name": "codebuddy-models-manager",
+  "version": "0.1.0",
+  "description": "A local-first visual manager for CodeBuddy models.json.",
+  "type": "module",
+  "main": "server.js",
+  "bin": {
+    "codebuddy-models-manager": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "codebuddy",
+    "models",
+    "models.json",
+    "openai-compatible"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

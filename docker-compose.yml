@@ -1,0 +1,9 @@
+services:
+  codebuddy-models-manager:
+    build: .
+    ports:
+      - "4310:4310"
+    volumes:
+      - ~/.codebuddy:/data
+    environment:
+      CODEBUDDY_MODELS_PATH: /data/models.json

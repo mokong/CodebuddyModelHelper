@@ -1,0 +1,21 @@
+node_modules/
+.DS_Store
+*.log
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Local CodeBuddy config and backups should not be committed.
+.codebuddy/
+models.json
+models.*.json
+backups/
+
+# Runtime temp files
+*.tmp
+
+# Build and test outputs
+dist/
+coverage/
