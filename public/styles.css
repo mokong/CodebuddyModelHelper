@@ -178,11 +178,22 @@ input:focus {
   grid-template-columns: 360px 1fr;
   gap: 18px;
   margin-top: 18px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .panel {
   padding: 18px;
+}
+
+.list-panel,
+.editor-panel {
+  height: 620px;
+}
+
+.list-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .panel-header {
@@ -207,7 +218,8 @@ input:focus {
 .model-list {
   display: grid;
   gap: 10px;
-  max-height: 620px;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
   padding-right: 4px;
 }
@@ -243,8 +255,10 @@ input:focus {
 }
 
 .model-form {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 18px;
+  min-height: calc(100% - 58px);
 }
 
 .form-grid {
@@ -306,6 +320,11 @@ input:focus {
   overflow-wrap: anywhere;
 }
 
+.form-actions {
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
 .empty-state {
   display: grid;
   gap: 6px;
@@ -333,6 +352,11 @@ input:focus {
   .layout,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .list-panel,
+  .editor-panel {
+    height: auto;
   }
 
   .search-box {

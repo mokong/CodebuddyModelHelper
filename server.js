@@ -48,6 +48,7 @@ function publicModel(model) {
   const { apiKey, ...rest } = model;
   return {
     ...rest,
+    originalId: model.originalId || model.id,
     hasApiKey: Boolean(apiKey),
     apiKeyMasked: maskKey(apiKey),
   };
@@ -161,10 +162,11 @@ async function writeConfig(nextConfig) {
   const merged = {
     ...normalized,
     models: normalized.models.map((model) => {
-      const previous = existingById.get(model.id);
+      const previous = existingById.get(model.originalId || model.id);
       const next = { ...model };
       delete next.hasApiKey;
       delete next.apiKeyMasked;
+      delete next.originalId;
 
       if (next.apiKey === KEEP_API_KEY || typeof next.apiKey === "undefined") {
         if (previous?.apiKey) next.apiKey = previous.apiKey;

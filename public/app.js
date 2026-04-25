@@ -32,6 +32,7 @@ const elements = {
 function modelDefaults() {
   return {
     id: "",
+    originalId: "",
     name: "",
     vendor: "",
     url: "",
@@ -190,6 +191,7 @@ function readFormModel(previous) {
   return {
     ...(previous || {}),
     id: form.elements.id.value.trim(),
+    originalId: previous?.originalId || previous?.id || "",
     name: form.elements.name.value.trim(),
     vendor: form.elements.vendor.value.trim(),
     url: form.elements.url.value.trim(),
@@ -202,7 +204,7 @@ function readFormModel(previous) {
   };
 }
 
-function applyForm(event) {
+async function saveModel(event) {
   event.preventDefault();
   const previous = selectedModel();
   if (!previous) return;
@@ -214,12 +216,27 @@ function applyForm(event) {
     return;
   }
 
+  const previousModels = state.config.models;
+  const previousAvailableModels = state.config.availableModels;
+  const previousSelectedId = state.selectedId;
+
   state.config.models = state.config.models.map((model) => (model.id === previous.id ? next : model));
   state.config.availableModels = state.config.availableModels.map((id) => (id === previous.id ? next.id : id));
   state.selectedId = next.id;
-  markDirty();
+  state.dirty = true;
   render();
-  showStatus("已应用到列表，点击“保存配置”后写入 models.json。");
+  showStatus("正在保存模型...");
+
+  try {
+    await saveConfig();
+  } catch (error) {
+    state.config.models = previousModels;
+    state.config.availableModels = previousAvailableModels;
+    state.selectedId = previousSelectedId;
+    state.dirty = true;
+    render();
+    throw error;
+  }
 }
 
 function addModel() {
@@ -235,6 +252,7 @@ function addModel() {
   const model = {
     ...modelDefaults(),
     id,
+    originalId: id,
     name: "New Model",
     vendor: "Custom",
     url: "https://api.example.com/v1/chat/completions",
@@ -248,14 +266,29 @@ function addModel() {
 function deleteSelected() {
   const model = selectedModel();
   if (!model) return;
-  const ok = window.confirm(`删除模型「${model.id}」？保存前不会写入文件。`);
+  const ok = window.confirm(`删除模型「${model.id}」并立即保存到本地配置？`);
   if (!ok) return;
 
-  state.config.models = state.config.models.filter((item) => item.id !== model.id);
-  state.config.availableModels = state.config.availableModels.filter((id) => id !== model.id);
-  state.selectedId = state.config.models[0]?.id || null;
-  markDirty();
+  const previousModels = state.config.models;
+  const previousAvailableModels = state.config.availableModels;
+  const nextModels = state.config.models.filter((item) => item.id !== model.id);
+  const nextAvailableModels = state.config.availableModels.filter((id) => id !== model.id);
+
+  state.config.models = nextModels;
+  state.config.availableModels = nextAvailableModels;
+  state.selectedId = nextModels[0]?.id || null;
+  state.dirty = true;
   render();
+  showStatus("正在删除并保存...");
+
+  saveConfig().catch((error) => {
+    state.config.models = previousModels;
+    state.config.availableModels = previousAvailableModels;
+    state.selectedId = model.id;
+    state.dirty = true;
+    render();
+    showStatus(error.message, "error");
+  });
 }
 
 async function saveConfig() {
@@ -293,7 +326,9 @@ elements.saveBtn.addEventListener("click", () => {
 
 elements.addBtn.addEventListener("click", addModel);
 elements.deleteBtn.addEventListener("click", deleteSelected);
-elements.modelForm.addEventListener("submit", applyForm);
+elements.modelForm.addEventListener("submit", (event) => {
+  saveModel(event).catch((error) => showStatus(error.message, "error"));
+});
 elements.searchInput.addEventListener("input", (event) => {
   state.search = event.target.value;
   renderList();
